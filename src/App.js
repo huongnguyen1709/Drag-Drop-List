@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import initialData from './Data/initial-data'
 import Column from './Components/Column'
 import 'css-reset-and-normalize'
-import { DragDropContext } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -12,6 +12,23 @@ const Container = styled.div`
     grid-template-columns: repeat(3, 1fr) 
 `
 
+class InnerList extends PureComponent { // PureComponent check as we have shouldComponentUpdate
+    // shouldComponentUpdate(nextProps) {
+    //     if (
+    //         nextProps.column === this.props.column &&
+    //         nextProps.taskMap === this.props.taskMap &&
+    //         nextProps.index === this.props.index
+    //     ) { return false }
+    //     return true
+    // }
+
+    render() {
+        const { column, taskMap, index } = this.props
+        const tasks = column.taskIds.map(taskId => taskMap[taskId])
+        return <Column column={column} tasks={tasks} index={index} />
+    }
+}
+
 class App extends Component {
 
     constructor(props) {
@@ -19,7 +36,7 @@ class App extends Component {
         this.state = initialData
     }
 
-    onDragStart = () => {
+    /*onDragStart = () => {
         document.body.style.color = 'orange'
         document.body.style.transition = 'background-color 0.2s ease'
     }
@@ -30,21 +47,34 @@ class App extends Component {
             ? destination.index / Object.keys(this.state.tasks).length
             : 0
         document.body.style.backgroundColor = `rgba(153, 141, 217, ${opacity})`
-    }
+    }*/
 
     onDragEnd = result => {
         // change the color of body back to original
         document.body.style.color = 'inherit'
         document.body.style.backgroundColor = 'inherit'
         // TODO: reorder our column and change state
-
-        const { destination, source, draggableId } = result
+        console.log(result)
+        const { destination, source, draggableId, type } = result
         if (!destination) {
             return
         }
 
         if (destination.droppableId === source.droppableId &&
             destination.index === source.index) {
+            return
+        }
+
+        if (type === 'column') {
+            const newColumnOrder = Array.from(this.state.columnOrder)
+            newColumnOrder.splice(source.index, 1)
+            newColumnOrder.splice(destination.index, 0, draggableId)
+
+            const newState = {
+                ...this.state,
+                columnOrder: newColumnOrder
+            }
+            this.setState(newState)
             return
         }
 
@@ -107,21 +137,41 @@ class App extends Component {
             <DragDropContext
                 // onDragStart // is called when the drag start
                 onDragStart={this.onDragStart}
-                // onDragUpdate // is called when something changes during a drag such as an item is moving into a new position
-                onDragUpdate={this.onDragUpdate}
+                // onDragUpdate is called when something changes during a drag such as an item is moving into a new position
+                // onDragUpdate={this.onDragUpdate}
                 onDragEnd={this.onDragEnd} // is called at the end of a drag
             >
-                <Container>
-                    {
-                        this.state.columnOrder.map(columnId => {
-                            const column = this.state.columns[columnId]
-                            const tasks = column.taskIds.map(taskId => {
-                                return this.state.tasks[taskId]
-                            })
-                            return <Column key={columnId} column={column} tasks={tasks} />
-                        })
-                    }
-                </Container>
+                <Droppable
+                    droppableId='all-columns'
+                    direction='horizontal'
+                    type='column'
+                >
+                    {provided => (
+                        <Container
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                        >
+                            {
+                                this.state.columnOrder.map((columnId, index) => {
+                                    const column = this.state.columns[columnId]
+                                    return (
+                                        <InnerList
+                                            key={columnId}
+                                            column={column}
+                                            taskMap={this.state.tasks}
+                                            index={index}
+                                        />
+                                    )
+                                    {/* const tasks = column.taskIds.map(taskId => {
+                                        return this.state.tasks[taskId]
+                                    })
+                                    return <Column key={columnId} column={column} tasks={tasks} index={index} /> */}
+                                })
+                            }
+                            {provided.placeholder}
+                        </Container>
+                    )}
+                </Droppable>
             </DragDropContext>
 
         );
