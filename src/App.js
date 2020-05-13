@@ -9,7 +9,7 @@ const Container = styled.div`
     width: 95%;
     margin: 10px auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 
+    grid-template-columns: repeat(3, 1fr);
 `
 
 class InnerList extends PureComponent { // PureComponent check as we have shouldComponentUpdate
