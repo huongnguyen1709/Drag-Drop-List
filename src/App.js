@@ -162,10 +162,6 @@ class App extends Component {
                                             index={index}
                                         />
                                     )
-                                    {/* const tasks = column.taskIds.map(taskId => {
-                                        return this.state.tasks[taskId]
-                                    })
-                                    return <Column key={columnId} column={column} tasks={tasks} index={index} /> */}
                                 })
                             }
                             {provided.placeholder}

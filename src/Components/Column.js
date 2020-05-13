@@ -7,17 +7,21 @@ const Container = styled.div`
     margin: 8px;
     border: 1px solid lightgrey;
     border-radius: 2px;
-    background-color: white;
+    background-color: skyblue;
 
     display: flex;
     flex-direction: column;
 `
-const Title = styled.h3`
+const Title = styled.h2`
     padding: 8px;
+    text-align: center;
+    background-color: #ed402d;
+    color: #eddfdd;
+    font-size: 22px;
 `
 const TaskList = styled.div`
     padding: 8px;
-    background-color: ${props => (props.isDraggingOver ? 'skyblue' : 'inherit')};
+    background-color: ${props => (props.isDraggingOver ? '#48d995' : 'inherit')};
     transition: background-color 0.2s ease;
     flex-grow: 1;
     min-height: 100px;

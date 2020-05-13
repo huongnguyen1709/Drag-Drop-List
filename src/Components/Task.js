@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Draggable } from 'react-beautiful-dnd'
 
 const Container = styled.div`
+    font-size: 18px;
     border: 1px solid lightgrey;
     border-radius: 2px;
     padding: 8px;
@@ -14,8 +15,6 @@ const Container = styled.div`
                 ? 'lightgreen'
                 : 'white'
     };
-
-/*display: flex;*/
 `
 
 // const Handle = styled.div`
